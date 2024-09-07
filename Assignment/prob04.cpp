@@ -29,7 +29,10 @@ int main() {
             continue;
 
         words[words_index] = word;                  // 중복되지 않은 word를 words 배열에 추가
-        words_index++;                              
+
+
+        if (infile.eof() == false)                  // 파일의 끝이 아닐 때에만 words_index를 추가
+            words_index++;                             
     }
 
     infile.close();
