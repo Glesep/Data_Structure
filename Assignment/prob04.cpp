@@ -15,7 +15,7 @@ int main() {
         duplicated = false; // duplicated false
         infile >> word;
         
-        if (word.length() < 2){                      // 길이가 2 이상이 아닐 떄 다음 반복으로 넘어감
+        if (word.length() < 2)                       // 길이가 2 이상이 아닐 떄 다음 반복으로 넘어감
             continue;
         
         for (int i = 0; i <= words_index; i++) {
