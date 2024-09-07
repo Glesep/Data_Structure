@@ -7,7 +7,7 @@ int main() {
     ifstream infile("input4.txt");
 
     string word;            // 한 단어를 받는 변수 정의
-    string words[1000];     // 포인터 배열으로 단어들을 저장하는 변수 정의
+    string words[1000];     // 단어들을 저장하는 변수 정의
     int words_index = 0;    // words 배열의 최고 인덱스
     bool duplicated;
 
