@@ -18,6 +18,7 @@ int main() {
         if (word.length() < 2)                       // 길이가 2 이상이 아닐 떄 다음 반복으로 넘어감
             continue;
         
+        // for문의 조건은 일반적인 형태로 되도록이면 작성하기
         for (int i = 0; i < words_count; i++) {
             if (words[i] == word) {                  // 단어가 같을 시, duplicated = true     
                 duplicated = true;
