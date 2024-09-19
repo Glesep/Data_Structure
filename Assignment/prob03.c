@@ -13,9 +13,10 @@ int main()
     for (int i = 0; i < n; i++) {
         /* 
         방법1:
-            words 변수는 포인터를 담는 배열이기 때문에 words 배열의 요소에 문자열이 들어갈 수 없다.
+            오답: words 변수는 포인터를 담는 배열이기 때문에 words 배열의 요소에 문자열이 들어갈 수 없다.
+            words[i]에는 메모리 주소가 정의되지 않았기 때문에 들어가지 못한다.
         */
-        scanf("%s", words[i]);
+        scanf("%s", words[i]);  // scanf에는 전달할 대상의 주소를 알려줘야함
 
 
         /*
@@ -31,6 +32,7 @@ int main()
         방법3:
             strcpy 함수는 첫번째 매개변수에 있는 배열에 두번째 문자열을 복사하는 함수이다.
             words 배열은 포인터를 담는 배열이므로 문자열을 담을 수 없다.
+            words[i]에 char 배열의 포인터를 정의하면 받을 수 있다.
         */ 
         scanf("%s", buf);
         strcpy(words[i], buf);
