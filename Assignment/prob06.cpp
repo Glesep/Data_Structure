@@ -36,6 +36,7 @@ int countWords(string line)
 
     int count = 0;
     // 문자열 line을 하나의 stream 객체로 만들기 >> sstream으로부터 문자열 읽어오기
+    // stringstream 으로 읽으면 그냥 공백 기준으로 읽어옴
     stringstream sstream(line);
     string str;
 

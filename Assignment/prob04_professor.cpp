@@ -11,7 +11,7 @@ int main() {
     int words_count = 0;    // words 배열 내의 단어 개수
     //bool duplicated;
 
-    while(infile>>word) {
+    while(infile>>word) {   //infile - while 은 이렇게 작성하자
         bool duplicated = false; // duplicated false, 변수는 사용할 때 선언, 스코프를 최대한 좁게 만들자
         // infile >> word;
         
@@ -31,7 +31,7 @@ int main() {
         words[words_count++] = word;                  // 중복되지 않은 word를 words 배열에 추가
 
 
-        // if (infile.eof() == false)                  // 파일의 끝이 아닐 때에만 words_count를 추가, 너무 인덱스에 매몰되지 말자
+        // if (infile.eof() == false)                  // 너무 인덱스에 매몰되지 말자, eof 사용은 신중히!
         //     words_count++;                             
     }
 
