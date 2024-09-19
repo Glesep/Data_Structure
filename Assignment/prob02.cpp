@@ -49,7 +49,7 @@ int main() {
  * @brief 점의 좌표를 배열로 받는 함수
  * 
  * @param array 좌표들이 저장될 배열의 주소 (포인터 타입)
- * @param infile ifstream 변수
+ * @param infile ifstream 변수(참조로만 가능)
  * @return Point2D* 좌표들이 저장된 배열의 주소
  */
 Point2D *makeArray(ifstream &inFile) {
