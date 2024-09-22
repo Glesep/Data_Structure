@@ -31,6 +31,7 @@ int main()
 
         for (; index <= words_index; index++)
         {
+            
             if (words[index] == word)
             { // 단어가 같을 시, 반복 종료
                 break;
