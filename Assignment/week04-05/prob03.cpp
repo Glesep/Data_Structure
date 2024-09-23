@@ -37,37 +37,40 @@ int main()
 
     infile.close();
 
-    // pair<string, string> p = split_line(wordsAndDiscriptions[0], '\t');
-    // cout << p.first << ": " << p.second << endl;
-
-    // find_if사용하여 한 라인에서 단어부분만 확인하는 코드 작성해보기
     cin >> str; // 2. 한 단어를 키보드로부터 입력받기
 
-    auto it = find_if(wordsAndDiscriptions.begin(), wordsAndDiscriptions.end(), isExist);
 
-    if (it != wordsAndDiscriptions.end())
-    {
+
+
+    // 더욱 간단히 하는 법 생각해보기
+    for (auto it = wordsAndDiscriptions.begin(); it < wordsAndDiscriptions.end(); it++) {
+        pair<string, string> p = split_line(*it, '\t');
+        if (str == p.first) {                   // 3. 사전에 있는 단어면 그 단어와 설명 출력
+            cout << p.first << ": " << p.second << endl;
+
+            stringstream sstream(p.second);     // 4. 단어의 설명에 등장하는 길이가 3이상인 모든 단어들을 다시 사전에서 검색하여 단어와 설명을 출력 (동일 단어 2번 출력 X)
+            string word;
+            vector<string> duplication;
+            
+            while(sstream >> word) {
+                bool duplicated = false;
+                for (auto it_dup = duplication.begin(); it_dup < duplication.end(); it_dup++) {
+                    if (*it_dup == word) {
+                        duplicated = true;
+                        break;
+                    }
+                }
+
+                if (duplicated == true)
+                    continue;
+                
+
+            }
+            // break;
+        }
     }
 
-    //     if (it != )
-    //     for (auto it = wordsAndDiscriptions.begin(); it < wordsAndDiscriptions.end(); it++) {
-    //         pair<string, string> p = split_line(*it, '\t');
-
-    //         if (str == p.first) {                   // 3. 사전에 있는 단어면 그 단어와 설명 출력
-    //             cout << p.first << ": " << p.second << endl;
-
-    //             stringstream sstream(p.second);     // 4. 단어의 설명에 등장하는 길이가 3이상인 모든 단어들을 다시 사전에서 검색하여 단어와 설명을 출력 (동일 단어 2번 출력 X)
-    //             string word;
-    //             vector<string> duplication;
-    //             while(sstream >> word) {
-    //                 if
-    //             }
-
-    //             // break;
-    //         }
-    //     }
-
-    //  auto it = find(word_list.begin(), word_list.end(), word);
+   
 
     return 0;
 }
