@@ -38,7 +38,7 @@ int main()
         }
 
         // 4. 단어의 목록을 한 줄로 출력
-        for (auto i : word_list)
+        for (auto i : word_list)        // 확인요망
             cout << i << " ";
         cout << endl;
     }
