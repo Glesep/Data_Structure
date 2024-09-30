@@ -12,6 +12,13 @@ using namespace std;
 2. 한 단어를 키보드로부터 입력받기
 3. 사전에 있는 단어면 그 단어와 설명 출력
 4. 단어의 설명에 등장하는 길이가 3이상인 모든 단어들을 다시 사전에서 검색하여 단어와 설명을 출력 (동일 단어 2번 출력 X)
+
+
+** dictionary 자료구조 사용해보기 - map(데이터들 간 순서정렬이 자동으로)
+** 중복제거에 set 자료구조 사용해보기
+** if(getline(ss,word,'\t') && getline(ss, def)) - 아이디어 얻어가기
+** remove_if 알아보기 - unique와 비슷함
+** 간단한 기능을 이용해 위의 함수들의 역할을 하는 코드 짜보는게 중요하다.
 */
 
 void store_wordsAndDiscriptions(string &line, vector<string> &words, vector<string> &discriptions);

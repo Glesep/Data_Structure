@@ -6,6 +6,13 @@
 #include <cassert>
 #include <vector>
 
+
+
+/*
+range for문 - for문의 대상의 요소에서 각각을 복사하여 값을 들고온다.
+vector를 대상으로 삼을 시 iterator가 가리키는 요소들을 복사한다? <- 알아보기
+
+ */
 using namespace std;
 struct Person
 {
