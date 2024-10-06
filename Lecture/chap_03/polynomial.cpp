@@ -9,8 +9,10 @@ struct Term
     int expo;
     Term *next = nullptr;
 
-    Term() {} // default 생성자
+    // default 생성자
+    Term() {}
 
+    // 생성자
     Term(int c, int e) : coef(c), expo(e) {}
     Term(int c, int e, Term *p) : coef(c), expo(e), next(p) {}
 };
@@ -21,7 +23,9 @@ struct Polynomial
     Term *first = nullptr;
     int size = 0;
 
+    // default 생성자
     Polynomial() {}
+    // 생성자
     Polynomial(char name) : name(name) {}
 };
 
@@ -72,25 +76,44 @@ int main()
     }
 }
 
+//==========================================================================================
+
+/**
+ * @brief
+ * 다항식 poly에 새로운 하나의 항을 추가하는 함수
+ * 1. 추가하려는 항과 동일한 차수의 항이 이미 있는 경우: 기존 항의 계수만 변경
+ * 2. 그렇지 않은 경우: 새로운 항을 삽입
+ * @param poly 해당 다항식 (참조)
+ * @param c 추가하고 싶은 항의 계수
+ * @param e 추가하고 싶은 항의 차수
+ */
 void add_term(Polynomial &poly, int c, int e)
 {
+    // 계수가 0인 경우
     if (c == 0)
         return;
 
+    // poly.first == head
     Term *p = poly.first, *q = nullptr;
+
     while (p != nullptr && p->expo > e)
     {
         q = p;
         p = p->next;
     }
 
+    // 동일 차수의 항이 존재하는 경우
     if (p != nullptr && p->expo == e)
     {
+        // 계수 더하기
         p->coef += c;
+        // 만약 계수가 0이 됐다면
         if (p->coef == 0)
         {
+            // 첫 번째 노드일 때
             if (q == nullptr)
                 poly.first = p->next;
+            // 일반적 경우일 때
             else
                 q->next = p->next;
 
@@ -101,14 +124,16 @@ void add_term(Polynomial &poly, int c, int e)
         return;
     }
 
-    if (q == nullptr)
+    // 새로운 차수의 항을 삽입하는 경우
+    if (q == nullptr) // while문을 안 돌았을 경우 - empty list 거나 차수가 가장 높거나 - 맨 앞에 삽입
         poly.first = new Term(c, e, poly.first);
-    else
+    else // q의 뒤에, p의 앞에 삽입 - p == nullptr 가능
         q->next = new Term(c, e, p);
 
     poly.size++;
 }
 
+// 다항식을 찾는 함수
 vector<Polynomial>::iterator find_poly(char name)
 {
     for (auto it = polys.begin(); it != polys.end(); it++)
@@ -147,26 +172,32 @@ void handle_print(char name)
         print_poly(*it);
 }
 
-int calc_term(Term *term, int x) {
+int calc_term(Term *term, int x)
+{
     int result = term->coef;
-    for (int i = 0; i < term->expo; i++) {
+    for (int i = 0; i < term->expo; i++)
+    {
+        // 계수 * x에 들어간 값
         result *= x;
     }
     return result;
 }
 
-
-int calc_poly(Polynomial poly, int x) {
+int calc_poly(Polynomial poly, int x)
+{
     int result = 0;
     Term *t = poly.first;
-    while(t != nullptr) {
+    // 다항식을 순회
+    while (t != nullptr)
+    {
         result += calc_term(t, x);
         t = t->next;
     }
 
     return result;
 }
-void handle_calc(char name, int x) {
+void handle_calc(char name, int x)
+{
     auto it = find_poly(name);
     if (it == polys.end())
         cout << "No such polynomial exists." << endl;
@@ -174,22 +205,28 @@ void handle_calc(char name, int x) {
         cout << calc_poly(*it, x) << endl;
 }
 
-void insert_polynomial(Polynomial p) {
+void insert_polynomial(Polynomial p)
+{
     auto it = find_poly(p.name);
 
-    if (it == polys.end()) {
+    if (it == polys.end())
+    {
         polys.push_back(p);
     }
 
-    else {
+    else
+    {
+        // 동일한 이름의 다항식이 존재했을 시, 기존 다항식을 삭제 후 새 다항식을 넣어줌
         clear_poly(*it);
         *it = p;
     }
 }
 
-void handle_add(char name, int c, int e) {
+void handle_add(char name, int c, int e)
+{
     auto it = find_poly(name);
-    if (it == polys.end()) {
+    if (it == polys.end())
+    {
         cout << "No such polynomial exists." << endl;
         return;
     }
@@ -197,11 +234,13 @@ void handle_add(char name, int c, int e) {
     add_term(*it, c, e);
 }
 
-void clear_poly(Polynomial &p) {
+void clear_poly(Polynomial &p)
+{
     Term *t = p.first, *tmp;
 
-    while(t != nullptr) {
-        tmp = t;
+    while (t != nullptr)
+    {
+        tmp = t; // 알맹이는 남기기 위해 tmp 정의
         t = t->next;
         delete tmp;
     }
