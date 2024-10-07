@@ -70,6 +70,8 @@ void read_file()
             p = p->next;
         }
     }
+    
+    infile.close();
 }
 
 /**
