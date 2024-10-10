@@ -22,17 +22,13 @@ Node *add_first(Node *head, int d) {
 void remove_multiple_three(Node *&head) {
     Node *p = head;
     Node *q = nullptr;
-
-    // 0. empty list인 경우
-    if (p == nullptr)
-        return;
     
     while(p->data % 3 != 0 && p != nullptr) {
         q = p;
         p = p->next;
     }
 
-    // 1. 3의 배수가 없을 떄
+    // 1. 3의 배수가 없을 떄 or empty list
     if (p == nullptr)
         return;
 
@@ -40,6 +36,8 @@ void remove_multiple_three(Node *&head) {
 
     // 2-1. 첫 번째 노드가 3의 배수일 때
     if (q == nullptr) {
+
+        // 아래의 두 case 합쳐주기
         // 단독 노드일 때
         if (p->next == nullptr)
             head = nullptr; // 포인터도 값에 의한 호출 주의!!!!!!!! - 주소 자체만 바꾸면 값에 의한 호출 생각해야함
