@@ -11,6 +11,10 @@ struct Node {
 Node *head_first = nullptr;
 Node *head_second = nullptr;
 
+
+// head node를 어떻게 관리할 것인가를 가장 중요하게 생각해야 한다.
+// 예외적 경우를 먼저 생각하는 습관을 가지자 -> 잔가지 쳐내기
+// 맥락에 따라 코드 구현이 조금씩 달라진다.
 /**
  * @brief 첫 번째 연결리스트의 맨 끝에 두 번째 연결리스트를 연결하여 하나의 연결리스트로 합치는 함수 
  * 
