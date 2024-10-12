@@ -15,6 +15,7 @@ struct Node
 Node *head = nullptr;
 Node *tail = nullptr;
 
+// pre 노드 뒤에 문자열 item을 삽입
 void add_after(Node *pre, string item)
 {
     // 새로운 노드 구성
