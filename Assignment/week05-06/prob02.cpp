@@ -14,13 +14,6 @@ struct Node
 
 Node *head = nullptr;
 
-/*
-필요한 것
-저장
-word 찾기
-출력
-
-*/
 void set_linkedList();
 void print_word(Node *head);
 void add_first(string item);
@@ -166,7 +159,7 @@ void remove_after(Node *prev)
     }
 }
 
-// counta에 item값 이하인 값을 가진 node를 삭제
+// count에 item값 이하인 값을 가진 node를 삭제
 void remove(int item)
 {
     Node *p = head;
