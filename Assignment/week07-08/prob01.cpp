@@ -5,7 +5,7 @@
 #include <vector>
 #include <list>
 #include <cassert>
-
+#include <windows.h>
 using namespace std;
 
 int id_counter = 0; // 각 Song 객체마다 서로 다른 index를 부여하기 위해서 하나의 전역변수를 사용한다.
@@ -31,15 +31,6 @@ struct Song
     }
 };
 
-vector<string> split_line(string &line, char delimiter)
-{
-    vector<string> tokens;
-    stringstream sstream(line);
-    string str;
-    while (getline(sstream, str, delimiter))
-        tokens.push_back(str);
-    return tokens;
-}
 
 list<Artist *> artist_directory[256]; // 이름의 첫 문자를 배열 인덱스로 사용한다.
 
@@ -48,15 +39,39 @@ list<Song *> song_directory[SONG_DIRECTORY_SIZE];
 
 const string datafilename = "songs.csv";
 
+vector<string> split_line(string &line, char delimiter)
+{   
+    vector<string> tokens;
+    stringstream sstream(line);
+    string str;
+    while (getline(sstream, str, delimiter)) {
+        tokens.push_back(str);
+    }
+    return tokens;
+}
+
 Artist *find_artist(string name)
 {
     list<Artist *> artist_list = artist_directory[(unsigned char)name[0]];
     for (auto it = artist_list.begin(); it != artist_list.end(); it++)
     {
-        if ((*it)->name == name)
+        if ((*it)->name == name)    // 앞에 부분만 확인하는 조건문 작성
             return *it;
     }
     return nullptr;
+}
+
+// keyword로 시작하는 가수를 찾는 함수
+vector<Artist *> find_artists(string keyword) {
+    vector<Artist*> artists_vec;
+
+    list<Artist *> artist_list = artist_directory[(unsigned char)keyword[0]];
+    for (auto it = artist_list.begin(); it != artist_list.end(); it++)
+    {
+        if ((*it)->name.compare(0, keyword.length(), keyword) == 0)    // 앞에 부분만 확인하는 조건문 작성
+            artists_vec.push_back((*it));
+    }
+    return artists_vec;
 }
 
 void print_artist(Artist *p)
@@ -65,6 +80,18 @@ void print_artist(Artist *p)
     for (auto s : p->songs)
     {
         cout << " " << s->index << ":" << s->title << ", " << s->album << ", " << s->mv_url << endl;
+    }
+}
+
+void print_artist_keyword(vector<Artist *> artist_vec) {
+
+    if (artist_vec.size() == 0) {
+        cout << "Artist not found" << endl;
+        return;
+    }
+
+    for (auto it = artist_vec.begin(); it != artist_vec.end(); it++) {
+        print_artist((*it));
     }
 }
 void print_artist_directory()
@@ -116,6 +143,21 @@ void load_songs(string filename)
     songfile.close();
 }
 
+// 제목에 키워드가 포함되었으면 출력
+void print_song_directory_withKeyword(string keyword) {
+    for (int i = 0; i < SONG_DIRECTORY_SIZE; i++)
+    {
+        list<Song *> &song_list = song_directory[i];
+        for (auto s : song_list)
+        {
+            if (s->title.find(keyword) != string::npos) {
+                cout << s->index << ":" << s->title << ", "
+                    << s->artist->name << ", " << s->album << ", " << s->mv_url << endl;
+
+            }
+        }
+    }
+}
 void print_song_directory()
 {
     for (int i = 0; i < SONG_DIRECTORY_SIZE; i++)
@@ -137,14 +179,52 @@ int main()
     {
         cout << "$ ";
         string command;
-        cin >> command;
+        getline(cin, command);
+        // command 토큰으로 나누기
+        vector<string> command_token = split_line(command, ' ');
+        // cout << command_token[0] << " " << command_token[1] << " " <<  command_token[2] << endl;
 
-        if (command == "list")
+        if (command_token[0] == "list")
         {
-            print_song_directory();
+            if (command_token.size() == 1)
+                print_song_directory();
+            else if (command_token[1] == "-a")
+                print_artist_directory();
+
         }
 
-        else if (command == "exit")
+        else if (command_token[0] == "add") {
+            string title, artist, album, mvUrl;
+
+            cout << " Title: ";
+            getline(cin, title);
+
+            cout << " Artist: ";
+            getline(cin, artist);
+
+            cout << " Album: ";
+            getline(cin, album);
+
+            cout << " MV url: ";
+            getline(cin, mvUrl);
+
+            add_song(title, artist, album, mvUrl);
+        }
+
+        else if (command_token[0] == "find") {
+
+            if (command_token[1] == "-a") {
+                // cout << command_token[2] << endl;
+                vector<Artist *> artist_vec = find_artists(command_token[2]);
+                print_artist_keyword(artist_vec);
+            }
+            else {
+                // 제목이 키워드를 포함하는 모든 노래 찾기
+                print_song_directory_withKeyword(command_token[1]);
+            }
+        }
+
+        else if (command_token[0] == "exit")
             break;
     }
     return 0;
