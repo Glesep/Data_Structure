@@ -158,6 +158,7 @@ void print_song_directory_withKeyword(string keyword) {
         }
     }
 }
+
 void print_song_directory()
 {
     for (int i = 0; i < SONG_DIRECTORY_SIZE; i++)
