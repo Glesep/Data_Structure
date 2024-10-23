@@ -33,6 +33,12 @@ int main()
     cout << str1 << endl;           // hello newbie
     cout << '\n'; 
 
+    // str.append(strTmp, pos, 2) : strTmp의 인덱스 pos부터 2개를 str 뒤에 붙임, pos 설정 안할 시 맨 처음 인덱스부터
+    str1 = "hello";
+    str1.append(str2, 1, 2);
+    cout << str1 << endl;
+    cout << '\n';
+
     // str.clear() : str 내 요소 전체 삭제
     // str.empty() : str 내부가 비었으면 true, 아니면 false
     cout << "clear func" << endl;
