@@ -10,6 +10,7 @@ https://velog.io/@whipbaek/c-unique-%ED%95%A8%EC%88%98%EC%97%90-%EA%B4%80%ED%95%
 
 1,1,3,4,4,5,6,6,6
 1,3,4,5,6,5,6,6,6
+unique한 숫자들을 앞부터 채우고 나머지는 기존의 것 유지
 */
 int main()
 {
@@ -25,7 +26,7 @@ int main()
         cout << item << " ";
     cout << endl;
 
-    my_vec.erase(it, my_vec.end());         // 1,1
+    my_vec.erase(it, my_vec.end());         // 1,3,4,5,6
     for (int item : my_vec)
         cout << item << " ";
     cout << endl;

@@ -1,9 +1,9 @@
 #include <iostream>
 using namespace std;
 
-void increase(void *data, int psize)
+void increase(void *data, int psize)        // void *data는 포인터 타입을 정하지 않은 것
 {
-    if (psize == sizeof(char))
+    if (psize == sizeof(char))      
     {
         char *pchar;
         pchar = (char *)data;

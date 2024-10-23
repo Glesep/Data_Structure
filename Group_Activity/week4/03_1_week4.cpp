@@ -18,7 +18,7 @@ int main()
         cout << v[i] << " ";        // 10 10 10 10 10
     cout << endl;
 
-    v.insert(v.begin(), 5);         // v.begin()에 5 삽입, 5 10 10 10 10 10 15
+    v.insert(v.begin(), 5);         // v.begin()에 5 삽입, 5 10 10 10 10 10
     cout << "The first element is: " << v[0] << endl;       // 5
 
     v.erase(v.begin());             // v.begin()에 있는 요소 삭제, 나머지 위치 앞으로 한칸씩 조정

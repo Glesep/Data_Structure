@@ -34,6 +34,6 @@ int main()
 {
     int numbers[] = {10, 20, 30};
     increment_all(numbers, numbers + 3);
-    print_all(numbers, numbers + 3);
+    print_all(numbers, numbers + 3);        // 11 21 31
     return 0;
 }

@@ -39,11 +39,13 @@ void remove_multiple_three(Node *&head) {
 
         // 아래의 두 case 합쳐주기
         // 단독 노드일 때
-        if (p->next == nullptr)
-            head = nullptr; // 포인터도 값에 의한 호출 주의!!!!!!!! - 주소 자체만 바꾸면 값에 의한 호출 생각해야함
-        // 단독 노드가 아닐 때
-        else
-            head = p->next;
+        // if (p->next == nullptr)
+        //     head = nullptr; // 포인터도 값에 의한 호출 주의!!!!!!!! - 주소 자체만 바꾸면 값에 의한 호출 생각해야함
+        // // 단독 노드가 아닐 때
+        // else
+        //     head = p->next;
+
+        head = p->next;
     }
     
     // 2-2. 나머지 경우일 때

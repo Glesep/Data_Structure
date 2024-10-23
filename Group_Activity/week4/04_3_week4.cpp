@@ -12,7 +12,7 @@ int main()
 
     v.erase(it1, it2);      // it1부터 it2 이전까지 해당하는 요소들 삭제
     for (auto it = v.begin(); it != v.end(); ++it)
-        cout << *it << ' ';
+        cout << *it << ' ';     // 4 5
     
     return 0;
 }

@@ -13,7 +13,7 @@ int main()
 
     str.append(str2);       // Writing 
     str.append(str3, 6, 3); // Writing 10 
-    str.append("dots are cool", 5); // Writing 10 dots
+    str.append("dots are cool", 6); // Writing 10 dots
 
     std::cout << str << '\n';
     return 0;
