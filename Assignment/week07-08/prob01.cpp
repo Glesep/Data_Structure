@@ -179,7 +179,7 @@ void load_songs(string filename)
     songfile.close();
 }
 
-void remove_song(int song_index) {
+list<Song *>::iterator remove_song(int song_index) {
     list<Song *> &song_list = song_directory[song_index % 10];
     Artist *artist_forSong;
     for (auto it = song_list.begin(); it != song_list.end(); it++) {
@@ -193,9 +193,11 @@ void remove_song(int song_index) {
     for (auto it = artist_forSong->songs.begin(); it != artist_forSong->songs.end(); it++) {
         if ((*it)->index == song_index) {
             delete (*it);       // 할당 해제
-            artist_forSong->songs.erase(it);    // 리스트 내에서 삭제
-            break;
+            it = artist_forSong->songs.erase(it);    // 리스트 내에서 삭제
+            return it;      // remove_artist를 위한 iterator 전송
         }
+
+        return it;
     }
 }
 
@@ -215,8 +217,13 @@ void remove_artist(string keyword)
             cin >> YesOrNo;
             if (YesOrNo == "yes")
             {
-
-
+                // artist 내부 노래 삭제
+                list<Song *> &song_list_forArtist = (*it)->songs;
+                for (auto it2 = song_list_forArtist.begin(); it2 != song_list_forArtist.end();) {
+                    // remove_song에서 iterator를 삭제했기 때문에 it2가 작동하지 않는 문제 발생
+                    // 이는 remove_song에서 삭제된 그 다음 이터레이터를 반환하는 형식으로 해결
+                    it2 = remove_song((*it2)->index);
+                }
 
                 it = artist_list.erase(it); // 삭제되었으므로 iterator는 한칸 뒤로 움직임, it++할 필요 X
                 cin.ignore();               // cin >> 이후 getline을 했다면 버퍼에 '\n'이 남아있으므로 '\n'을 지워주는 작업 요함
