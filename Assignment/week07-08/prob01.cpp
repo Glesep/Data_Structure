@@ -8,6 +8,7 @@
 #include <windows.h>
 using namespace std;
 
+
 int id_counter = 0; // 각 Song 객체마다 서로 다른 index를 부여하기 위해서 하나의 전역변수를 사용한다.
 struct Song;        // Song의 전방 선언, Artist 이후에 나올것이라고 컴파일러에게 알려줌
 
@@ -16,7 +17,7 @@ struct Artist
     string name;
     list<Song *> songs;
     Artist() {}
-    Artist(string name): name(name) {}
+    Artist(string name) : name(name) {}
 };
 
 struct Song
@@ -31,7 +32,6 @@ struct Song
     }
 };
 
-
 list<Artist *> artist_directory[256]; // 이름의 첫 문자를 배열 인덱스로 사용한다.
 
 const int SONG_DIRECTORY_SIZE = 10;
@@ -40,11 +40,12 @@ list<Song *> song_directory[SONG_DIRECTORY_SIZE];
 const string datafilename = "songs.csv";
 
 vector<string> split_line(string &line, char delimiter)
-{   
+{
     vector<string> tokens;
     stringstream sstream(line);
     string str;
-    while (getline(sstream, str, delimiter)) {
+    while (getline(sstream, str, delimiter))
+    {
         tokens.push_back(str);
     }
     return tokens;
@@ -55,21 +56,23 @@ Artist *find_artist(string name)
     list<Artist *> artist_list = artist_directory[(unsigned char)name[0]];
     for (auto it = artist_list.begin(); it != artist_list.end(); it++)
     {
-        if ((*it)->name == name)    // 앞에 부분만 확인하는 조건문 작성
+        if ((*it)->name == name)
             return *it;
     }
     return nullptr;
 }
 
 // keyword로 시작하는 가수를 찾는 함수
-vector<Artist *> find_artists(string keyword) {
-    vector<Artist*> artists_vec;
+// 반환값은 키워드를 접두사로 갖는 가수를 가리키는 이터레이터
+vector<Artist *> find_artists(string keyword)
+{
+    vector<Artist *> artists_vec;
 
     list<Artist *> artist_list = artist_directory[(unsigned char)keyword[0]];
     for (auto it = artist_list.begin(); it != artist_list.end(); it++)
     {
-        if ((*it)->name.compare(0, keyword.length(), keyword) == 0)    // 앞에 부분만 확인하는 조건문 작성
-            artists_vec.push_back((*it));
+        if ((*it)->name.compare(0, keyword.length(), keyword) == 0) // 앞에 부분만 확인하는 조건문 작성
+            artists_vec.push_back(*it);
     }
     return artists_vec;
 }
@@ -83,15 +86,18 @@ void print_artist(Artist *p)
     }
 }
 
-void print_artist_keyword(vector<Artist *> artist_vec) {
+void print_artist_keyword(vector<Artist *> artist_vec)
+{
 
-    if (artist_vec.size() == 0) {
+    if (artist_vec.size() == 0)
+    {
         cout << "Artist not found" << endl;
         return;
     }
 
-    for (auto it = artist_vec.begin(); it != artist_vec.end(); it++) {
-        print_artist((*it));
+    for (auto it = artist_vec.begin(); it != artist_vec.end(); it++)
+    {
+        print_artist(*it);
     }
 }
 void print_artist_directory()
@@ -102,6 +108,36 @@ void print_artist_directory()
         for (auto ptr : artist_list)
         {
             print_artist(ptr);
+        }
+    }
+}
+
+// 제목에 키워드가 포함되었으면 출력
+void print_song_directory_withKeyword(string keyword)
+{
+    for (int i = 0; i < SONG_DIRECTORY_SIZE; i++)
+    {
+        list<Song *> &song_list = song_directory[i];
+        for (auto s : song_list)
+        {
+            if (s->title.find(keyword) != string::npos)
+            {
+                cout << s->index << ":" << s->title << ", "
+                     << s->artist->name << ", " << s->album << ", " << s->mv_url << endl;
+            }
+        }
+    }
+}
+
+void print_song_directory()
+{
+    for (int i = 0; i < SONG_DIRECTORY_SIZE; i++)
+    {
+        list<Song *> &song_list = song_directory[i];
+        for (auto s : song_list)
+        {
+            cout << " " << s->index << ":" << s->title << ", "
+                 << s->artist->name << ", " << s->album << ", " << s->mv_url << endl;
         }
     }
 }
@@ -143,32 +179,51 @@ void load_songs(string filename)
     songfile.close();
 }
 
-// 제목에 키워드가 포함되었으면 출력
-void print_song_directory_withKeyword(string keyword) {
-    for (int i = 0; i < SONG_DIRECTORY_SIZE; i++)
-    {
-        list<Song *> &song_list = song_directory[i];
-        for (auto s : song_list)
-        {
-            if (s->title.find(keyword) != string::npos) {
-                cout << s->index << ":" << s->title << ", "
-                    << s->artist->name << ", " << s->album << ", " << s->mv_url << endl;
+void remove_song(int song_index) {
+    list<Song *> &song_list = song_directory[song_index % 10];
+    Artist *artist_forSong;
+    for (auto it = song_list.begin(); it != song_list.end(); it++) {
+        if ((*it)->index == song_index) {
+            artist_forSong = (*it)->artist; // 아티스트 객체 내에서도 삭제위해 아티스트 포인터를 미리 받음
+            song_list.erase(it);      // 삭제되었으므로 iterator는 한칸 뒤로 움직임, it++할 필요 X 
+            break;                    // 대상 삭제됨, 반복 종료
+        }
+    }
 
-            }
+    for (auto it = artist_forSong->songs.begin(); it != artist_forSong->songs.end(); it++) {
+        if ((*it)->index == song_index) {
+            delete (*it);       // 할당 해제
+            artist_forSong->songs.erase(it);    // 리스트 내에서 삭제
+            break;
         }
     }
 }
 
-void print_song_directory()
+/*
+https://infjin.tistory.com/143 : cin >> 과 getline을 혼용할 때 사용법
+*/
+void remove_artist(string keyword)
 {
-    for (int i = 0; i < SONG_DIRECTORY_SIZE; i++)
+    list<Artist *> &artist_list = artist_directory[(unsigned char)keyword[0]];
+
+    for (auto it = artist_list.begin(); it != artist_list.end(); )
     {
-        list<Song *> &song_list = song_directory[i];
-        for (auto s : song_list)
-        {
-            cout << " " << s->index << ":" << s->title << ", "
-                 << s->artist->name << ", " << s->album << ", " << s->mv_url << endl;
+        if ((*it)->name.compare(0, keyword.length(), keyword) == 0)
+        { // 앞에 부분만 확인하는 조건문 작성
+            string YesOrNo;
+            cout << "Want to remove artist '" << (*it)->name << "' ? ";
+            cin >> YesOrNo;
+            if (YesOrNo == "yes")
+            {
+
+
+
+                it = artist_list.erase(it); // 삭제되었으므로 iterator는 한칸 뒤로 움직임, it++할 필요 X
+                cin.ignore();               // cin >> 이후 getline을 했다면 버퍼에 '\n'이 남아있으므로 '\n'을 지워주는 작업 요함
+                continue;
+            }
         }
+        it++;
     }
 }
 
@@ -191,10 +246,10 @@ int main()
                 print_song_directory();
             else if (command_token[1] == "-a")
                 print_artist_directory();
-
         }
 
-        else if (command_token[0] == "add") {
+        else if (command_token[0] == "add")
+        {
             string title, artist, album, mvUrl;
 
             cout << " Title: ";
@@ -212,16 +267,31 @@ int main()
             add_song(title, artist, album, mvUrl);
         }
 
-        else if (command_token[0] == "find") {
+        else if (command_token[0] == "find")
+        {
 
-            if (command_token[1] == "-a") {
-                // cout << command_token[2] << endl;
+            if (command_token[1] == "-a")
+            {
                 vector<Artist *> artist_vec = find_artists(command_token[2]);
                 print_artist_keyword(artist_vec);
             }
-            else {
+            else
+            {
                 // 제목이 키워드를 포함하는 모든 노래 찾기
                 print_song_directory_withKeyword(command_token[1]);
+            }
+        }
+
+        else if (command_token[0] == "remove")
+        {
+            if (command_token[1] == "-a")
+            {
+                remove_artist(command_token[2]);
+            }
+            
+            else {
+                int song_index = stoi(command_token[1]);
+                remove_song(song_index);
             }
         }
 
