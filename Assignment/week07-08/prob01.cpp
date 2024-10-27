@@ -182,6 +182,7 @@ void load_songs(string filename)
 list<Song *>::iterator remove_song(int song_index) {
     list<Song *> &song_list = song_directory[song_index % 10];
     Artist *artist_forSong;
+    // song 리스트에서 해당하는 인덱스 삭제
     for (auto it = song_list.begin(); it != song_list.end(); it++) {
         if ((*it)->index == song_index) {
             artist_forSong = (*it)->artist; // 아티스트 객체 내에서도 삭제위해 아티스트 포인터를 미리 받음
@@ -190,15 +191,39 @@ list<Song *>::iterator remove_song(int song_index) {
         }
     }
 
-    for (auto it = artist_forSong->songs.begin(); it != artist_forSong->songs.end(); it++) {
+    auto it = artist_forSong->songs.begin();
+
+    // 아티스트 내부의 songs 리스트에서 인덱스에 해당하는 노래 삭제 후 이터레이터 제거
+    for (; it != artist_forSong->songs.end(); it++) {
         if ((*it)->index == song_index) {
             delete (*it);       // 할당 해제
             it = artist_forSong->songs.erase(it);    // 리스트 내에서 삭제
             return it;      // remove_artist를 위한 iterator 전송
         }
-
-        return it;
     }
+    return it;
+}
+
+// 변경사항 저장
+void save_songs(string filename)
+{
+    string line;
+    ofstream saveFile(filename);
+    for (int i = 0; i < 256; i++) {
+        list<Artist *> &artist_list = artist_directory[i];
+
+        for (auto artist: artist_list) {
+            list<Song *> artist_songs = artist->songs;
+            for (auto song: artist_songs) {
+                saveFile << song->title << "," 
+                            << song->artist->name << ","
+                             << song->album << ","
+                             << song->mv_url
+                             << '\n';
+            }
+        }
+    }
+    saveFile.close();
 }
 
 /*
@@ -300,6 +325,10 @@ int main()
                 int song_index = stoi(command_token[1]);
                 remove_song(song_index);
             }
+        }
+
+        else if (command_token[0] == "save") {
+           save_songs(datafilename);
         }
 
         else if (command_token[0] == "exit")
