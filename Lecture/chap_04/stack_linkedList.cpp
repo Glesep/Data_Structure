@@ -5,6 +5,7 @@ struct Node
 };
 
 Node *top_node = nullptr;
+
 void push(string item)
 {
     Node *p = new Node;
@@ -12,6 +13,7 @@ void push(string item)
     p->next = top_node;
     top_node = p;
 }
+
 void pop()
 {
     if (empty())
