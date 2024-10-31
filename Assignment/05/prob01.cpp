@@ -11,11 +11,15 @@ private:
     int top_pos = -1;
 
 public:
+    // T *stack = new T[4];
+    typedef typename T::value_type value_type; // Cont의 value type을 value_type으로 정의
 
     void ArrayReallocation() {
-        T *tmp = new T[(int)stack->size()*2];
+        int stackSize = sizeof(stack) / sizeof(value_type);
+        
+        T *tmp = new T[stackSize*2];
 
-        for (int i=0; i < stack->size(); i++) {
+        for (int i=0; i < stackSize; i++) {
             tmp[i] = stack[i];
         }
 
@@ -57,6 +61,14 @@ int main()
     for (int i = 0; i < 5; i ++) {
         s1.push("hi");
     }
+
+    // ArrayStack<string> s1;
+
+    // string a[4];
+
+    // cout << sizeof(a) / sizeof(string) << endl;
+    // // s1.stack.size();
+    
 
     
 }
