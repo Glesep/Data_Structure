@@ -101,7 +101,7 @@ int return_sequence(ArrayStack<int> &stack, int &seq, int jp) {
     }
 
     // 3. 괄호가 아닐 때
-    return -1;
+    return jp;
 }
 
 int main()
