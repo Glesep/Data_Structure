@@ -44,11 +44,11 @@ public:
         stack[++top_pos] = c;
     }
 
-    void pop()
+    T pop()
     {
         if (empty())
             throw runtime_error("stack_empty");
-        top_pos--;
+        return stack[top_pos--];    // 반환 후 스택 삭제
     }
 
     T top()
