@@ -2,7 +2,6 @@
 #include <string>
 using namespace std;
 
-// const int MAX_CAPACITY = 100;
 template <typename T>
 class ArrayStack
 {
@@ -45,11 +44,11 @@ public:
         stack[++top_pos] = c;
     }
 
-    void pop()
+    T pop()
     {
         if (empty())
             throw runtime_error("stack_empty");
-        top_pos--;
+        return stack[top_pos--];    // 반환 후 스택 삭제
     }
 
     T top()
@@ -63,31 +62,69 @@ public:
         cout << stackSize << endl;
     }
 };
-int main()
-{
-    ArrayStack<string> s1;
 
-    for (int i = 0; i < 9; i ++) {
-        s1.push("hi");
+const string OPERATORS = "()";
+const int PRECEDENCE[] = {1, 0}; // '(' 과 ')'을 구분하기 위한 배열 정의
+
+/**
+ * @brief 괄호인지 아닌지 구분
+ * 
+ * @param ch 괄호
+ * @return 열린 괄호 == 1, 닫힌 괄호 == 0, 다른 문자 == -1
+ */
+int judge_parentheses(char ch) {
+
+    if (OPERATORS.find(ch) != string::npos)
+        return PRECEDENCE[OPERATORS.find(ch)];
+    else
+        return -1;
+}
+
+/**
+ * @brief 괄호의 열리고 닫힘을 알려주는 함수
+ * 
+ * @param stack 스택 객체
+ * @param seq 열려있는 괄호의 순서 판단 변수
+ * @param jp judge_parentheses의 결과값
+ * @return int -1일 땐 괄호가 아님
+ */
+int return_sequence(ArrayStack<int> &stack, int &seq, int jp) {
+    // 1. 열린 괄호일 때
+    if (jp == 1) {
+        stack.push(++seq);
+        return seq;
     }
 
-   s1.debug();
+    // 2. 닫힌 괄호일 때
+    else if (jp == 0) {
+        return stack.pop();
+    }
 
-    // string a[4] = {"hello", "hi", "sell", "beauty"};
-    // int size = sizeof(a) / sizeof(string);
+    // 3. 괄호가 아닐 때
+    return -1;
+}
 
-    // cout << size << endl;
+int main()
+{
+    int sequence = 0;   // 괄호의 순서를 매길 변수 정의
+    string input;
+    ArrayStack<int> stack;   // stack 구현
 
+    cin >> input;
+
+    for (int i = 0; i < input.length(); i++) {
+        int jp = judge_parentheses(input[i]);
+        int result = return_sequence(stack, sequence, jp);  // 결과 값을 변수에 저장
+
+        if (result == -1)
+            continue;
+
+        else {
+            cout << result << " ";
+        }
+    }
+
+    cout << '\n';
     
-
-
-    // ArrayStack<string> s1;
-
-    // string a[4];
-
-    // cout << sizeof(a) / sizeof(string) << endl;
-    // // s1.stack.size();
-    
-
-    
+    return 0;
 }
