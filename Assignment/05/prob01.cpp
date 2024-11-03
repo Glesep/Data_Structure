@@ -7,33 +7,35 @@ template <typename T>
 class ArrayStack
 {
 private:
-    T *stack = new T[4];
+    int stackSize = 4;
+    T *stack = new T[stackSize];
     int top_pos = -1;
 
-public:
-    // T *stack = new T[4];
-    typedef typename T::value_type value_type; // Cont의 value type을 value_type으로 정의
 
+public:
     void ArrayReallocation() {
-        int stackSize = sizeof(stack) / sizeof(value_type);
-        
         T *tmp = new T[stackSize*2];
 
         for (int i=0; i < stackSize; i++) {
             tmp[i] = stack[i];
         }
 
-        delete stack;       // error
+        delete[] stack;       // 배열 동적할당 시 [] 추가하는 것 기억하기
         stack = tmp;
+
+        stackSize *= 2;
     }
+
     bool full()
     {
-        return top_pos == stack->size() - 1;
+        return top_pos == stackSize - 1;
     }
+
     bool empty()
     {
         return top_pos == -1;
     }
+
     void push(T c)
     {
         if (full()) {
@@ -42,25 +44,42 @@ public:
             
         stack[++top_pos] = c;
     }
+
     void pop()
     {
         if (empty())
             throw runtime_error("stack_empty");
         top_pos--;
     }
+
     T top()
     {
         if (empty())
             throw runtime_error("stack_empty");
         return stack[top_pos];
     }
+
+    void debug() {
+        cout << stackSize << endl;
+    }
 };
 int main()
 {
     ArrayStack<string> s1;
-    for (int i = 0; i < 5; i ++) {
+
+    for (int i = 0; i < 9; i ++) {
         s1.push("hi");
     }
+
+   s1.debug();
+
+    // string a[4] = {"hello", "hi", "sell", "beauty"};
+    // int size = sizeof(a) / sizeof(string);
+
+    // cout << size << endl;
+
+    
+
 
     // ArrayStack<string> s1;
 
