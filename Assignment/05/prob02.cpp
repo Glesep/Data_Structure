@@ -63,16 +63,31 @@ public:
     }
 };
 
-void equal_or_lessThan(int num, ArrayStack<int> &stack) {
+int stack_count = 0;    // 스택 내부 요소의 개수를 세는 전역변수
+
+/**
+ * @brief 각 정수가 주어질 때 마다 이전에 입력된 
+정수들 중에서 자신보다 작거나 같은 정수들은 모두 제거한 후 자신을 포함하여 남아있는 정수들의 개
+수를 출력
+ * 
+ * @param num 입력된 정수
+ * @param stack stack
+ * @return int stack_count
+ */
+int problemSolveFunc(int num, ArrayStack<int> &stack) {
+
     // 빈 스택이 아닐 때
-    if (!stack.empty()) {
-        while (stack.top() <= num) {    // 문제의 조건과 같으면
-            stack.pop();
-        }
+    // 조건에는 접근했을 때 오류가 나지 않는 조건을 먼저 쓴다.
+    while (!stack.empty() && stack.top() <= num) {    // 문제의 조건과 같으면
+        stack.pop();
+        stack_count--;
     }
 
     stack.push(num);
+
+    return ++stack_count;
 }
+
 
 int main()
 {
@@ -81,15 +96,14 @@ int main()
     
     ArrayStack<int> stack;  // 스택 생성
 
-
     for (int i = 0; i < N; i++) {
-        int tmp;
-        cin >> tmp;
+        int num;
+        cin >> num;
 
-        // 자신보다 작거나 같은 정수들을 모두 제거
-        
-        // 자신을 포함하여 남아있는 정수들의 개수 출력
+        cout << problemSolveFunc(num, stack) << " ";
     }
+
+    cout << endl;
     
     return 0;
 }
