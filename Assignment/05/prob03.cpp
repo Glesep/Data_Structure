@@ -63,7 +63,8 @@ public:
     }
 };
 
-// 백만자리 정수를 수 관련 가장 큰 범위의 자료형에 담지 못함 -> string으로 문자열 취급하기
+// 백만자리 정수를 정수 관련 자료형에 담지 못함 (long long도 19자리로 한없이 부족)
+// -> string으로 정수 취급하기
 
 // 자릿수를 담을 char형 stack 정의
 ArrayStack<char> stack;
