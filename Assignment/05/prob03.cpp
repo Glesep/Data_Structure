@@ -1,5 +1,5 @@
 #include <iostream>
-    
+#include <string>
 using namespace std;
 
 template <typename T>
@@ -63,20 +63,66 @@ public:
     }
 };
 
-// 윗 자릿수보다 크거나 같으면 stack push
-// 제거해야되는 횟수가 남으면 pop 후 push 혹은 넣지 않기
+// 백만자리 정수를 수 관련 가장 큰 범위의 자료형에 담지 못함 -> string으로 문자열 취급하기
 
-ArrayStack<int> stack;
+// 자릿수를 담을 char형 stack 정의
+ArrayStack<char> stack;
 
-void makeBiggestDigit(int num, int deleteFreq) {
-    if (!stack.empty()) {
-        
+/**
+ * @brief deleteFreq개의 digit을 제거하고 남은 자릿수들을 stack에 저장하는 함수
+ * 
+ * @param num string type으로 표현된 정수
+ * @param deleteFreq 제거할 digit의 수
+ */
+void makeBiggestDigit(string num, int deleteFreq) {
+    for (int i = 0; i < num.length(); i++) {
+        // 최대 자릿수에 해당하는 숫자는 스택에 그냥 넣기, 두번째 숫자부터 top과 비교
+        // 자기가 작거나 같으면 그냥 push됨
+        // deleteFreq가 0일 때 남은 숫자 전부 스택에 추가
+        if (deleteFreq == 0 || stack.empty() || stack.top() >= num[i]) {
+            stack.push(num[i]);
+        }
+
+        // 자기가 top보다 크면 pop후 자기가 push
+        else if (stack.top() < num[i]) {
+            while (!stack.empty() && deleteFreq != 0 && stack.top() < num[i]) {
+                stack.pop();
+                deleteFreq--;
+            }
+            stack.push(num[i]);
+        }
     }
-    else
+
+    // 수가 다 push되었을 때 숫자가 남아있다면 그 숫자만큼 pop
+    if (deleteFreq != 0) {
+        while (deleteFreq--) {
+            stack.pop();
+        }
+    }
 }
+
+/**
+ * @brief stack에 있는 자릿수들을 모아 출력해주는 함수
+ * 
+ */
+void printResult() {
+    string result;
+    while(!stack.empty()) {
+        result = stack.pop() + result;
+    }
+
+    cout << result << endl;
+}
+
 int main()
 {
-    
-    
+    string N;
+    int K;
+
+    cin >> N >> K;
+
+    makeBiggestDigit(N, K);
+    printResult();
+ 
     return 0;
 }
