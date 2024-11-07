@@ -86,6 +86,10 @@ void culculateSize(pair<int, int> currPos, int &componentSize, stack<int> &oppos
             culculateSize(currPos, componentSize, oppositeDirStack);
         }
 
+        // moveable이 물리적으로 안될 때 (image 범위 바깥으로 벗어날 떄)
+        else if()
+
+        // 
         else {
             // 직전에 있던 위치로 돌아가기
             currPos = move_to(currPos, oppositeDirStack.top());
@@ -138,7 +142,7 @@ void solveProblem() {
         // cout << "Current Position is (" << startPos.first << ", " 
         //                             << startPos.second << ")" << endl;
 
-        break;
+        // break;
 
         // 문제풀이 시작
         int componentSize = findComponentSize(startPos, oppositeDirStack);
