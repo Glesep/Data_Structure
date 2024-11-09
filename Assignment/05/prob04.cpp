@@ -2,7 +2,6 @@
 #include <fstream>
 #include <stack>
 #include <vector>
-#include <cstdlib>
 using namespace std;
 
 vector<vector<int>> image; // image가 담길 2차원 벡터
@@ -85,83 +84,73 @@ pair<int, int> move_to(pair<int, int> currPos, int dir)
     return nextPos;
 }
 
-
-
-// 아이디어 : 컴포넌트 하나의 크기를 다 구했으면 무조건 startPoint로 온다.
-
-/*
-currPos에 참조 사용한 이유 : 재귀함수는 함수 종료 후 되돌아갈 때 이전에 저장되었던 변수를 들고오기 때문에 
-                         3번째 경우 currPos를 바꿔도 적용이 되지 않음
-*/
-
 /**
- * @brief component 위를 움직이면서 componentSize를 계산하는 함수
+ * @brief 컴포넌트의 크기를 구하는 함수
  * 
- * @param currPos 현재 위치
- * @param componentSize 
- * @param oppositeDirStack 움직인 방향의 반대 방향을 담는 스택
+ * @param currPos 시작지점의 좌표
+ * @return int 컴포넌트의 크기
  */
-void culculateSize(pair<int, int> &currPos, int &componentSize, stack<int> &oppositeDirStack) {
-    
-    for (int dir = 0; dir < 8; dir++) {
-
-        if (moveable(currPos, dir)) {
-            oppositeDirStack.push(7-dir); // 움직일 방향의 반대 방향을 stack에 저장한다.
-            currPos = move_to(currPos, dir);
-            image[currPos.first][currPos.second]++; // 도착 위치에 1을 더해 방문했음을 알림
-            componentSize++;    // componentSize 체크
-
-            culculateSize(currPos, componentSize, oppositeDirStack);    // 재귀함수
-        }
-
-        // dir == 7일 때 위의 if문이 실행되었다면 else if로 구성시 다 무시되는 현상 발생 - if로 조정
-        // startPos에서 갈 곳이 없을 경우 끝내기
-        if (dir == 7 && oppositeDirStack.empty()) {
-            break;
-        }
-
-        // 더 이상 갈 곳이 없을 때, 이전 위치로 돌아가기
-        if(dir == 7 && !moveable(currPos, dir)) {
-            // 직전에 있던 위치로 돌아가기
-            /*
-            아래 라인을 실행 후 재귀함수 종료 시 currPos가 값에 의한 호출이었다면 그 상황의 값으로 변환됨.
-            따라서 매개변수 currPos를 참조에 의한 호출로 받아 값을 내가 컨트롤할 수 있도록 설계
-             */
-            currPos = move_to(currPos, oppositeDirStack.top());     
-            oppositeDirStack.pop();
-        }
-
-        
-    }
-}
-
-
-int findComponentSize(pair<int, int> currPos, stack<int> &oppositeDirStack) {
-    // startPoint 정의
+int findComponentSize(pair<int, int> currPos) {
+    // 시작 지점 기억 위한 변수 정의
     pair<int, int> startPos = currPos;
-    // 방문하였으면 1 증가 (startPoint)
-    image[currPos.first][currPos.second]++;
+    // 방문 표시
+    image[startPos.first][startPos.second]++;
+    // 컴포넌트 사이즈 정의
     int componentSize = 1;
+    // 간 방향을 저장하는 stack 정의
+    stack<int> dirStack;
+    // dir을 반복문 내부에서 바꾸기 위해 반복문 바깥에서 정의
+    int dir = 0;
 
+    // while문의 끝을 정하기 위한 flag
+    bool END = false;
 
-    // ============== 아래부터 재귀함수 ============== 
-    culculateSize(currPos, componentSize, oppositeDirStack);
+    while(!END) {
+        for (; dir < 8; dir++) {
+            // 계산이 끝날 조건 확인
+            if (currPos == startPos && image[currPos.first][currPos.second] > 1 
+                    && dir == 7 && !moveable(currPos, dir)) {
+                        END = true;
+                        break;
+            }
+
+            // 1. dir 방향으로 움직일 수 있다면 방향을 스택에 넣은 후 움직이고 componentSize 1 추가
+            if (moveable(currPos, dir)) {
+                dirStack.push(dir);
+                currPos = move_to(currPos, dir);
+
+                image[currPos.first][currPos.second]++;
+                componentSize++;
+                dir = 0;        // dir 초기화
+                break;
+            }
+
+            // 2. 모든 방향으로 움직일 수 없다면 스택의 top에 해당하는 방향의 반대방향으로 움직인 후 dir을 스택의 top에 해당하는 방향으로 조정
+            else if (dir == 7 && !moveable(currPos, dir)) {
+                int goBackDir = 7 - dirStack.top();
+                dirStack.pop();
+                currPos = move_to(currPos, goBackDir);
+                dir = 7 - goBackDir;    // dir을 돌아온 방향에서 다시 시도
+                break;
+            }
+        }
+    }
 
     return componentSize;
 }
 
-// 1. 1인 부분을 랜덤으로 선택한다. (시작점 찾기)
-// 2. 인접한 곳을 다 찾는다.
-// 3. 1인 부분을 다시 찾는다.
+/**
+ * @brief 시작점을 정하고 findComponentSize을 실행시키는 함수
+ */
 void solveProblem() {
     bool isSolved = false;
-    stack<int> oppositeDirStack;
+    
     while (!isSolved) {
         pair<int, int> startPos;
         bool getStartPoint = false;
-        // 1인 곳에 시작 지점을 정한다.
+        // 1인 부분을 벡터 내에서 순차적으로 탐색하여 선택한다. (시작점 찾기)
         for (startPos.first = 0; startPos.first < imageSize; startPos.first++) {
-            for (startPos.second = 0; startPos.second< imageSize; startPos.second++) {
+            for (startPos.second = 0; startPos.second < imageSize; startPos.second++) {
                 if (image[startPos.first][startPos.second] == 1) {
                     getStartPoint = true;
                     break;
@@ -180,7 +169,7 @@ void solveProblem() {
 
         else {
             // 문제풀이 시작
-            int componentSize = findComponentSize(startPos, oppositeDirStack);
+            int componentSize = findComponentSize(startPos);
             cout << componentSize << " ";
         }
     }
