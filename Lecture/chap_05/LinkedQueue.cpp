@@ -53,7 +53,8 @@ public:
     }
 
     // 복사생성자(copy constructor)는 copy_from을 호출하여 모든 노드들을 복제한다(문제점 2 해결)
-    ListQueue<T> &operator=(const ListQueue<T> &que)
+    // Garbage - 배열의 요소들이 포인터고 그 포인터가 각각 동적 객체를 거느릴 떄
+    ListQueue<T> &operator=(const ListQueue<T> &que)    
     {
         clear_list();
         copy_from(que);
@@ -86,7 +87,7 @@ public:
         if (head == nullptr) // 삭제한 후 empty list라면
             tail = nullptr;
 
-        delete p;
+        delete p;   // Garbage
         size_queue--;
     }
 
