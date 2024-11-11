@@ -6,8 +6,6 @@
 #include <cassert>
 #include <vector>
 
-
-
 /*
 range for문 - for문의 대상의 요소에서 각각을 복사하여 값을 들고온다.
 vector를 대상으로 삼을 시 iterator가 가리키는 요소들을 복사한다? <- 알아보기
@@ -101,22 +99,23 @@ void search_directory_AND(vector<string> &tokens)
     for (auto &p : directory)
     {
         bool target = true;
-        for (int i = 0; i < (int)tokens.size(); i++){   // 인덱스 실수 하지말기
-            
+        for (int i = 0; i < (int)tokens.size(); i++)
+        { // 인덱스 실수 하지말기
+
             // 찾는 대상이 아닌 경우
-            if(p.name.find(tokens[i]) == -1 &&
+            if (p.name.find(tokens[i]) == -1 &&
                 p.address.find(tokens[i]) == -1 &&
                 p.phone.find(tokens[i]) == -1 &&
                 p.email.find(tokens[i]) == -1 &&
-                p.web.find(tokens[i]) == -1) 
+                p.web.find(tokens[i]) == -1)
             {
-                target = false;             
+                target = false;
                 break;
             }
-            
         }
 
-        if (target) {
+        if (target)
+        {
             print_person(p);
         }
     }
@@ -207,16 +206,18 @@ int main()
 
         else if (command == "search")
         {
-            getline(cin, arguments);       // while문 조건 안에 표준입력스트림을 넣으면 계속 반복됨
+            getline(cin, arguments); // while문 조건 안에 표준입력스트림을 넣으면 계속 반복됨
             stringstream sstream(arguments);
-            vector<string> tokens;          // token들을 저장할 벡터 정의
+            vector<string> tokens; // token들을 저장할 벡터 정의
 
-            while(getline(sstream, arguments, '&')) {
+            while (getline(sstream, arguments, '&'))
+            {
                 tokens.push_back(arguments);
             }
-            
+
             // tokenizing된 문자열에서 공백 제거
-            for (auto it = tokens.begin(); it < tokens.end(); it++) {
+            for (auto it = tokens.begin(); it < tokens.end(); it++)
+            {
                 *it = trim(*it);
             }
 

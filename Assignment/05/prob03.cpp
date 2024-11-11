@@ -80,18 +80,18 @@ void makeBiggestDigit(string num, int deleteFreq) {
         // 최대 자릿수에 해당하는 숫자는 스택에 그냥 넣기, 두번째 숫자부터 top과 비교
         // 자기가 작거나 같으면 그냥 push됨
         // deleteFreq가 0일 때 남은 숫자 전부 스택에 추가
-        if (deleteFreq == 0 || stack.empty() || stack.top() >= num[i]) {
-            stack.push(num[i]);
-        }
 
+
+        // while문의 조건과 if문의 조건이 서로 중복
+        // else if문의 조건과 while문의 세번째조건이 중복
+        // 조건 중복없는지 짜고 확인해보자!
+        
         // 자기가 top보다 크면 pop후 자기가 push
-        else if (stack.top() < num[i]) {
-            while (!stack.empty() && deleteFreq != 0 && stack.top() < num[i]) {
-                stack.pop();
-                deleteFreq--;
-            }
-            stack.push(num[i]);
+        while (!stack.empty() && deleteFreq != 0 && stack.top() < num[i]) {
+            stack.pop();
+            deleteFreq--;
         }
+        stack.push(num[i]);
     }
 
     // 수가 다 push되었을 때 숫자가 남아있다면 그 숫자만큼 pop
