@@ -7,6 +7,7 @@ using namespace std;
 int groundSize = 0;
 int after_K_years = 0;
 vector<vector<int>> ground;
+bool resetData = false;
 
 // 방향 정의 배열
 int offset[4][2] = {{-1, 0},    // 북
@@ -23,13 +24,8 @@ pair<int,int> move_to(pair<int,int> pos, int dir);
 
 int main()
 {
-
     pullOneCase();
     findMaxCount();
-
-    // printGround();
-
-    
     return 0;
 }
 
@@ -41,15 +37,27 @@ int main()
 void pullOneCase() {
     ifstream infile("input1.txt");
     infile >> groundSize;
-
-    for (int i = 0; i < groundSize; i++) {
-        vector<int> vec;
-        for (int j = 0; j < groundSize; j++) {
-            int element;
-            infile >> element;
-            vec.push_back(element);
+    // ground를 리셋할 때
+    if (resetData) {
+        for (int i = 0; i < groundSize; i++) {
+            for (int j = 0; j < groundSize; j++) {
+                infile >> ground[i][j];
+            }
         }
-        ground.push_back(vec);
+    }
+
+    // 처음 불러올 때
+    else {
+        for (int i = 0; i < groundSize; i++) {
+            vector<int> vec;
+            for (int j = 0; j < groundSize; j++) {
+                int element;
+                infile >> element;
+                vec.push_back(element);
+            }
+            ground.push_back(vec);
+        }
+        resetData = true;
     }
 
     infile >> after_K_years;
@@ -81,19 +89,16 @@ void findMaxCount() {
         for (int j = 0; j < groundSize; j++) {
             if (ground[i][j] == 0) {
                 pair<int, int> pos_current(i,j);
-                // 칸 수 세기 시작 - 센 후에는 ground 초기화
+                // 칸 수 세기 시작
                 int count_current = countArea(pos_current);
-                pullOneCase();
-                cout << "reset" << endl;
-                printGround();
+                pullOneCase();  // ground 초기화
                 // 센 칸 수와 기존 최대 칸 수 비교
                     // 바꿔야되면 바꿔주기
                 if (count_current > count_max) {
                     count_max = count_current;
                     pos_max = pos_current;
                 }
-            }
-            // 
+            } 
         }
     }
 
@@ -101,13 +106,21 @@ void findMaxCount() {
     cout << count_max << endl;
 }
 
+/**
+ * @brief 현재 위치에 풀을 심었을 때 k년 뒤 풀이 자라는 구역의 개수를 반환하는 함수
+ * 
+ * @param curr 현재 위치
+ * @return int 풀이 자라는 구역의 개수 반환
+ */
 int countArea(pair<int, int> curr) {
-    int count_area = 1;
+    int count_area = 0;
     queue<pair<int, int>> que;
-    ground[curr.first][curr.second] = -1;
+    bool END = false;
+    ground[curr.first][curr.second] = 0;
     que.push(curr);
 
-    while(after_K_years > 0) {
+    // 반복 중단 조건에 걸리거나 que가 빌 때까지 반복
+    while(!END && !que.empty()) {
         curr = que.front();
         que.pop();
 
@@ -115,24 +128,23 @@ int countArea(pair<int, int> curr) {
             if (moveable(curr, dir)) {
                 pair<int, int> p = move_to(curr, dir);
                 ground[p.first][p.second] = ground[curr.first][curr.second] - 1;
+
+                // 반복 중단 조건: k+1년의 경우를 구하려 했을 때
+                if (ground[p.first][p.second] < (-1 * after_K_years)) {
+                    END = true;
+                    break;
+                }
+
                 count_area++;
                 que.push(p);
             }
         }
-
-        after_K_years--;
     }
-    printGround();
-    // cout << count_area << endl;
-
-
-
     return count_area;
 }
 
-
 /**
- * @brief 이미지 프린트 (debug용)
+ * @brief ground 프린트 (debug용)
  */
 void printGround() {
     cout << groundSize << endl;
