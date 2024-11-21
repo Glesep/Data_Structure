@@ -118,17 +118,21 @@ corner 세는 함수
 
 // 일정 분기에서 시작해서 다음 분기까지 길을 찾아가는 함수
 pair<int,int> retraverseRoute(pair<int, int> currPos, int lastDir) {
-
+    int moveDir = -1;
     for (int dir = 0 ; dir < 4; dir++) {
         // 움직일 수 있을 때
         // 처음 움직이는게 아니고 이전에 움직인 방향이랑 다르다면 현재 위치 반환
-        if(moveable(currPos, dir, true) && dir != lastDir && lastDir != -1) {
-            return currPos;
+        if (moveable(currPos, dir, true)) {
+            if (moveDir != lastDir) {   // 처음 움직이는 것 확인 아직 불가
+                return currPos;
+            }
+            moveDir = dir;
         }
 
-        // 처음 움직이는 것이거나 이전과 같은 방향으로 이동할 수 있다면
-
     }
+    // 처음 움직이는 것이거나 이전과 같은 방향으로 이동할 수 있다면 그쪽으로 이동
+    retraverseRoute(move_to(currPos, moveDir), moveDir);
+        
 }
 
 
