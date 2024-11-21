@@ -2,6 +2,8 @@
 #include <fstream>
 #include <vector>
 #include <queue>
+#include <stack>
+
 using namespace std;
 
 // 경로가 꺾인 최소 횟수 -> 최단 경로 중 하나
@@ -22,7 +24,7 @@ int offset[4][2] = {{-1, 0},  // 북
 
 void pullOneCase();
 void printmaze(); // debug
-bool moveable(pair<int, int> pos, int dir);
+bool moveable(pair<int, int> pos, int dir, bool retraverse=false);  // default param은 한 곳에만 정의
 pair<int, int> move_to(pair<int, int> pos, int dir);
 void findRoute();
 
@@ -30,6 +32,7 @@ int main()
 {
     pullOneCase();
     findRoute();
+    // printmaze();
     return 0;
 }
 
@@ -58,12 +61,17 @@ void pullOneCase()
     infile.close();
 }
 
-bool moveable(pair<int, int> pos, int dir)
+bool moveable(pair<int, int> pos, int dir, bool retraverse)
 {
     int x = pos.first + offset[dir][0];
     int y = pos.second + offset[dir][1];
+
+    if (retraverse)
+        return x >= 0 && x < mazeSize && y >= 0 && y < mazeSize && maze[x][y] == maze[pos.first][pos.second]+1;
+
     return x >= 0 && x < mazeSize && y >= 0 && y < mazeSize && maze[x][y] == 0; // 0이 길 이라는 표시
 }
+
 
 pair<int, int> move_to(pair<int, int> pos, int dir)
 {
@@ -101,24 +109,28 @@ void findRoute()
     cout << "No path exists" << endl;
 }
 
-// 1 증가 -> 방향 저장 후 움직이기
-// 다음 1증가 -> 전의 방향과 비교한 후 다르면 corner 인식
-// 분기와 방향을 기억해? - 한 분기의 모든 경우의 수를 stack에 저장
-// 한 경우의 수를 진행 시, stack top의 경우를 저장 후 stack pop
-// 분기가 생겼다는 말은 코너의 경우가 무조건 생긴다는 것이다. - 분기로 돌아갈 때 corner--
-// 한 분기의 모든 경우를 다 시도했을 경우 이전 분기로 넘어가기 - 이전 분기에서 갔던 방향 다음 방향부터 탐색
-
-int countMinCorner() {
-    int minCorner;
-    pair<int, int> startPos (mazeSize-1, mazeSize-1);   // 출구에서부터 세기
-
-    
+/*
+메이즈 탐색 함수
+corner 세는 함수
 
 
+*/
 
+// 일정 분기에서 시작해서 다음 분기까지 길을 찾아가는 함수
+pair<int,int> retraverseRoute(pair<int, int> currPos, int lastDir) {
 
-    return minCorner;
+    for (int dir = 0 ; dir < 4; dir++) {
+        // 움직일 수 있을 때
+        // 처음 움직이는게 아니고 이전에 움직인 방향이랑 다르다면 현재 위치 반환
+        if(moveable(currPos, dir, true) && dir != lastDir && lastDir != -1) {
+            return currPos;
+        }
+
+        // 처음 움직이는 것이거나 이전과 같은 방향으로 이동할 수 있다면
+
+    }
 }
+
 
 /**
  * @brief maze 프린트 (debug용)
