@@ -26,17 +26,18 @@ void pullOneCase();
 void printmaze(); // debug
 bool moveable(pair<int, int> pos, int dir, bool retraverse=false);  // default param은 한 곳에만 정의
 pair<int, int> move_to(pair<int, int> pos, int dir);
-void findRoute();
-void findMinCorner(pair<int,int> currPos, int countCorner, int &minCorner, int lastDir = -1);
+// void findRoute();
+void findMinCorner(pair<int,int> currPos, int cntCorner, int &minCorner, int lastDir = -1);
+// void findMinCorner(pair<int, int> currPos, int cntCorner=0, int lastDir=-1)
 
 int main()
 {   
     pullOneCase();
-    findRoute();
+    // findRoute();
     // printmaze();
 
     int minCorner = -1;
-    findMinCorner(pair<int, int> (mazeSize-1, mazeSize-1), 0, minCorner);
+    findMinCorner(pair<int, int> (0, 0), 0, minCorner);
 
     cout << minCorner << endl;
     return 0;
@@ -85,44 +86,84 @@ pair<int, int> move_to(pair<int, int> pos, int dir)
 }
 
 // 가면서 체크하기도 고려한다.
-void findRoute()
-{
-    queue<pair<int, int>> que;
-    pair<int, int> cur(0, 0);
-    maze[cur.first][cur.second] = -1;
-    que.push(cur);
-
-    while (!que.empty())
-    {
-        cur = que.front();
-        que.pop();
-
-        for (int dir = 0; dir < 4; dir++)
-        {
-            if (moveable(cur, dir))
-            {
-                pair<int, int> p = move_to(cur, dir);
-                maze[p.first][p.second] = maze[cur.first][cur.second] - 1;
-                if (p.first == mazeSize - 1 && p.second == mazeSize - 1)
-                {
-                    // cout << "Found the path." << endl;
-                    // printmaze();
-                    // return;
-                }
-                que.push(p);
-            }
-        }
-    }
-    cout << "END" << endl;
-    printmaze();
-}
 
 /*
-도착지에서 시작
-최대한 직선으로 가도록 유도
-출발지에 도달하면 min 변수와 비교
-가장 작은 수 출력
+1. 출구까지 찾아가는 함수(모든 경로)
+
 */
+void findMinCorner(pair<int,int> currPos, int cntCorner, int &minCorner, int lastDir) {
+    bool wasCorner = false;
+
+    for (int dir = 0; dir < 4; dir++) {
+        // 이전 방향으로의 진행이 코너였을 경우
+        if (wasCorner) {
+            cntCorner--;
+        }
+        // // Base Case
+        // if (currPos.first == 0 && currPos.second == 0 && moveable(currPos, dir) == false) {
+        //     return;
+        // }
+
+        // General Case
+        if (moveable(currPos, dir)) {
+            if (currPos.first != 0 && currPos.second != 0 && lastDir != dir && lastDir != -1) {
+                cntCorner++;
+                wasCorner = true;
+            }
+            findMinCorner(move_to(currPos, dir), cntCorner, minCorner, dir);
+        }
+    }
+
+    if (currPos.first == mazeSize-1 && currPos.second == mazeSize-1 && (minCorner == -1 || cntCorner < minCorner)) {
+        minCorner = cntCorner;
+    }
+}
+
+
+
+
+
+// void findRoute()
+// {
+//     queue<pair<int, int>> que;
+//     pair<int, int> cur(0, 0);
+//     maze[cur.first][cur.second] = -1;
+//     que.push(cur);
+
+//     while (!que.empty())
+//     {
+//         cur = que.front();
+//         que.pop();
+
+//         for (int dir = 0; dir < 4; dir++)
+//         {
+//             if (moveable(cur, dir))
+//             {
+//                 pair<int, int> p = move_to(cur, dir);
+//                 maze[p.first][p.second] = maze[cur.first][cur.second] - 1;
+//                 if ((p.first == mazeSize - 1 && p.second == mazeSize - 2) || (p.first == mazeSize - 2 && p.second == mazeSize - 1))
+//                 {
+//                     // cout << "Found the path." << endl;
+//                     // printmaze();
+//                     // return;
+//                     continue;
+//                 }
+//                 que.push(p);
+//             }
+//         }
+//     }
+//     cout << "END" << endl;
+//     // printmaze();
+
+//     printmaze();
+// }
+
+// /*
+// 도착지에서 시작
+// 최대한 직선으로 가도록 유도
+// 출발지에 도달하면 min 변수와 비교
+// 가장 작은 수 출력
+// */
 // void findMinCorner(pair<int,int> currPos, int lastDir = -1) {
 //     int countCorner = 0;
 //     for (int dir = 0; dir < 4; dir++) {
@@ -141,39 +182,39 @@ void findRoute()
 
         
 
-//     }
 // }
 
-void findMinCorner(pair<int,int> currPos, int countCorner, int &minCorner, int lastDir) {
-    bool isCorner = false;
 
-    for (int dir = 0; dir < 4; dir++) {
-        // 이전이 코너로 인식되었다면
-        if (isCorner) {
-            countCorner--;
-            isCorner = false;
-        }
+// void findMinCorner(pair<int,int> currPos, int countCorner, int &minCorner, int lastDir) {
+//     bool isCorner = false;
 
-        // 움직일 수 있으면
-        if (moveable(currPos, dir, true)) {
-            if (dir != lastDir && lastDir >= 0) {
-                if (countCorner+1 >= minCorner && minCorner != -1)
-                    continue;
+//     for (int dir = 0; dir < 4; dir++) {
+//         // 이전이 코너로 인식되었다면
+//         if (isCorner) {
+//             countCorner--;
+//             isCorner = false;
+//         }
+
+//         // 움직일 수 있으면
+//         if (moveable(currPos, dir, true)) {
+//             if (dir != lastDir && lastDir >= 0) {
+//                 if (countCorner+1 >= minCorner && minCorner != -1)
+//                     continue;
                 
-                countCorner++;
-                isCorner = true;
-            }
+//                 countCorner++;
+//                 isCorner = true;
+//             }
 
-            findMinCorner(move_to(currPos, dir), countCorner, minCorner, dir);
-        }
-    }
-    // 출발지에 도착했을 때, 최소랑 비교
-    if (currPos.first == 0 && currPos.second == 0) {
-        cout << "Change to " << countCorner << endl;
-        minCorner = countCorner;
-    }
+//             findMinCorner(move_to(currPos, dir), countCorner, minCorner, dir);
+//         }
+//     }
+//     // 출발지에 도착했을 때, 최소랑 비교
+//     if (currPos.first == 0 && currPos.second == 0) {
+//         cout << "Change to " << countCorner << endl;
+//         minCorner = countCorner;
+//     }
 
-}
+// }
 
 
 /**
