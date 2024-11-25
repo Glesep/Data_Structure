@@ -1,3 +1,10 @@
+/*
+인접하다는 의미만 생각을 바꿔보기
+내가 한번에 갈 수 있는(일자로 갈 수 있는) 모든 길이 인접하다고 생각해보자
+movaable을 recursion으로
+*/
+
+
 #include <iostream>
 #include <fstream>
 #include <vector>
