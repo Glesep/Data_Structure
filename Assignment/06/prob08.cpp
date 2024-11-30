@@ -7,7 +7,10 @@ using namespace std;
 void pullOneCase(ifstream &infile);
 void printGround();
 pair<int, int> pullPos(ifstream &infile);
-bool moveable(pair<int, int> currPos, pair<int, int> targetPos, int dir, int cntObject=0);
+bool moveable(pair<int,int> currPos, pair<int, int> destPos, int dir);
+void canCannonMove(pair<int, int> startPos, pair<int, int> currPos, pair<int, int> targetPos, bool &isFound);
+bool inGround(pair<int, int> pos);
+
 
 int groundSize = 0;
 vector<vector<int>> ground;
@@ -26,16 +29,14 @@ int main()
     ifstream infile("input8.txt");
 
     pullOneCase(infile);
-    pair<int, int> currPos = pullPos(infile);
+    pair<int, int> startPos = pullPos(infile);
     pair<int, int> targetPos = pullPos(infile);
 
     infile.close();
-    if (moveable(pair<int, int>(1, 0), pair<int, int>(1, 7), 1, 0))
-    {
-        cout << "yes" << endl;
-    }
-    else
-        cout << "no" << endl;
+
+    bool isFound = false;
+    canCannonMove(startPos, startPos, targetPos, isFound);  
+    
 
     return 0;
 }
@@ -45,83 +46,80 @@ int main()
 */
 
 /**
- * @brief currPos에서 targetPos까지 갈 수 있는지 확인(일직선상에서만 가능)
- *
- * @param currPos 시작 위치
- * @param targetPos 도착 위치
- * @param dir 방향(이 방향으로만 감)
- * @param cntObject 경로에 하나의 장애물만 있는지 판단을 위한 정수형 변수, 초깃값 0
+ * @brief 포가 일직선상에서 destPos 까지 움직일 수 있는가를 판단하는 함수
+ * 
+ * @param currPos 현재 위치
+ * @param destPos 목적지
+ * @param dir 방향 (이 방향으로만 간다)
  * @return true
- * @return false
+ * @return false 
  */
-bool moveable(pair<int, int> currPos, pair<int, int> targetPos, int dir, int cntObject)
-{
-    // cntObject: 경로에 하나의 장애물만 있는지 판단을 위한 정수형 변수
+bool moveable(pair<int,int> currPos, pair<int, int> destPos, int dir) {
+    pair<int, int> tmpPos = currPos;
+    // 경로 상의 이미 다른 말이 놓인 칸의 횟수
+    int object = 0;
 
-    // 목적지 자체가 갈 수 없는 곳이라면
-    if (ground[targetPos.first][targetPos.second] != 0)
+    // 가고 싶은 지점에 말이 놓여져 있을 경우 && 갔던 곳인 경우
+    if (ground[destPos.first][destPos.second] != 0)
         return false;
 
-    // 현재 위치가 목적지라면
-    if (currPos == targetPos)
-    {
-        // 장애물을 한번 넘었을 때
-        if (cntObject == 1)
-        {
-            return true;
+    while(tmpPos.first >= 0 && tmpPos.first < groundSize && tmpPos.second >= 0 && tmpPos.first < groundSize && tmpPos != destPos) {
+        if (ground[tmpPos.first][tmpPos.second] == 1) {
+            object++;
         }
-        else
-            return false;
-    }
-    // 갈 수 있는 곳에 접근했을 때
-    else if (currPos.first >= 0 &&
-             currPos.first < groundSize &&
-             currPos.second >= 0 &&
-             currPos.second < groundSize)
-    {
-        // 현재 위치에 장애물이 존재한다면
-        if (ground[currPos.first][currPos.second] == 1)
-        {
-            return moveable(pair<int, int>(currPos.first + offset[dir][0],
-                                           currPos.second + offset[dir][1]),
-                            targetPos, dir, cntObject + 1);
-        }
-        else
-            return moveable(pair<int, int>(currPos.first + offset[dir][0],
-                                           currPos.second + offset[dir][1]),
-                            targetPos, dir, cntObject);
+
+        tmpPos = pair<int,int> (tmpPos.first + offset[dir][0], tmpPos.second + offset[dir][1]);
     }
 
-    // 그 이외에는 못 감
-    return false;
+    if (object == 1)
+        return true;
+
+    else
+        return false;
 }
 
-// 갈 수 있으면 움직이고, 못가면 다음 칸 보기
-void canCannonGo(pair<int, int> currPos, pair<int, int> targetPos, bool &isFound)
-{
-    // 길을 못찾았을 때만 수행
-    if (!isFound)
-    {
-        if (currPos == targetPos)
-        {
-            isFound = true;
-            cout << "yes" << endl;
-            return;
-        }
+/*
+base case:
+1. 찾았을 때
+2. 못 찾았을 때
 
-        for (int dir = 0; dir < 4; dir++) {
-            pair<int, int> tmpPos(currPos.first + offset[dir][0],
-                                                currPos.second + offset[dir][1]);
+general case:
+1. 4방향 검사
+    검사 중 갈 수 있는 길이면 그 곳으로 이동 후 다시 4방향 검사
+    방향에 놓여있는 모든 길 검사
 
-            if (moveable(currPos, tmpPos, dir)) {
-                ground[currPos.first][currPos.second] = -1;
-                canCannonGo(tmpPos, targetPos, isFound);
-            }
-            
-        }
-        ground[currPos.first][currPos.second] = 0;
-
+*/
+void canCannonMove(pair<int, int> startPos, pair<int, int> currPos, pair<int, int> targetPos, bool &isFound) {
+    if (currPos == targetPos) {
+        isFound = true;
+        return;
     }
+
+    for (int dir = 0; dir < 4; dir++) {
+        pair<int, int> tmpPos (currPos.first + offset[dir][0], currPos.second + offset[dir][1]);
+
+        while(inGround(tmpPos)) {
+            if (moveable(currPos, tmpPos, dir)) {
+                ground[currPos.first][currPos.second] = -1; // 방문 표시 해야 다음에 여기는 안옴 - 경우의 수 줄이기
+                canCannonMove(startPos, tmpPos, targetPos, isFound);
+            }
+            else {
+                tmpPos = pair<int, int> (tmpPos.first + offset[dir][0], tmpPos.second + offset[dir][1]);
+            }
+        }
+    }
+
+    if (currPos == startPos) {
+        if (isFound)
+            cout << "yes" << endl;
+        else
+            cout << "no" << endl;
+    }
+    
+}
+
+bool inGround(pair<int, int> pos) {
+    return pos.first >= 0 && pos.first < groundSize && pos.second >=0 && pos.second < groundSize;
 }
 /**
  * @brief 하나의 테스트 케이스를 불러오는 함수
