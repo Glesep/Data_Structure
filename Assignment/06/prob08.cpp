@@ -4,8 +4,9 @@
 
 using namespace std;
 
-void pullOneCase();
+void pullOneCase(ifstream &infile);
 void printGround();
+pair<int, int> pullPos(ifstream &infile);
 
 int groundSize = 0;
 vector<vector<int>> ground;
@@ -24,8 +25,14 @@ int offset[4][2] = {{-1, 0},  // 북
 
 int main()
 {
-    pullOneCase();
-    printGround();
+    ifstream infile("input8.txt");
+
+    pullOneCase(infile);
+    pair<int, int> currPos = pullPos(infile);
+    pair<int, int> targetPos = pullPos(infile);
+
+    infile.close();
+    
     
     return 0;
 }
@@ -34,10 +41,27 @@ int main()
 한놈 넘긴 표시를 해야됨
 */
 
-bool moveable(pair<int, int> currPos, pair<int, int> targetPos, int dir) {
+bool moveable(pair<int, int> currPos, pair<int, int> targetPos, int dir, bool isOnlyOneObject) {
+    // isOnlyOneObject: 경로에 하나의 장애물만 있는지 판단하는 flag
 
+    // 목적지 자체가 장애물이라면
+    if (ground[targetPos.first][targetPos.second] == 1)
+        return false;
 
+    // 현재 위치가 목적지라면 flag 출력
+    if (currPos == targetPos) {
+        return isOnlyOneObject;
+    }
+    else {
+        // 현재 위치에 장애물이 존재한다면
+        if (ground[currPos.first][currPos.second] == 1) {
+            isOnlyOneObject = !isOnlyOneObject;
+        }
 
+        return moveable(pair<int, int> (currPos.first+offset[dir][0],
+                                        currPos.first+offset[dir][1]),
+                        targetPos, dir, isOnlyOneObject);
+    }
 }
 
 /**
@@ -45,9 +69,8 @@ bool moveable(pair<int, int> currPos, pair<int, int> targetPos, int dir) {
  *
  * @param infile ifstream
  */
-void pullOneCase()
+void pullOneCase(ifstream &infile)
 {
-    ifstream infile("input8.txt");
     infile >> groundSize;
     // 처음 불러올 때
     for (int i = 0; i < groundSize; i++)
@@ -61,8 +84,13 @@ void pullOneCase()
         }
         ground.push_back(vec);
     }
+}
 
-    infile.close();
+pair<int, int> pullPos(ifstream &infile) {
+    int x, y;
+    infile >> x >> y;
+
+    return pair<int,int> (x, y);
 }
 
 /**
