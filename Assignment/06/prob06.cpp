@@ -65,5 +65,6 @@ void findTarget(int startPos, string result, int K) {
         // 자기 위치에서는 안바꾸거나 (마지막 비트에서 접근하면 startPos가 oppositeBinarySeq의 인덱스를 넘어가면서 오류)
         findTarget(startPos+1, result+binarySeq[startPos], K);
     }
+    // 가지치기 - 절대 안되는 경우는 고려하지 않는다.
     
 }

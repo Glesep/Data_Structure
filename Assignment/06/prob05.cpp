@@ -31,6 +31,12 @@ int main()
     return 0;
 }
 
+
+/*
+꽝
+마무리 성공
+General
+*/
 /**
  * @brief 모든 경로를 찾는 함수, 돌아갈 때 자신의 흔적을 지우면서 가기
  * 
@@ -41,7 +47,7 @@ void findAllRoute(pair<int, int> currPos) {
     
     for (int dir = 0; dir < 4; dir++) {
         
-        maze[currPos.first][currPos.second] = 0;
+        // maze[currPos.first][currPos.second] = 0;
         // 도착했을 때
         if (currPos.first == mazeSize-1 && currPos.second == mazeSize-1) {
             cntRoute++;
@@ -49,7 +55,7 @@ void findAllRoute(pair<int, int> currPos) {
         }
 
         else if (moveable(currPos, dir)) {
-            maze[currPos.first][currPos.second] = -1;
+            // maze[currPos.first][currPos.second] = -1;
             findAllRoute(move_to(currPos, dir));
         }
     }
